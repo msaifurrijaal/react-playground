@@ -46,13 +46,21 @@ const ProductsPage = () => {
   };
 
   const handleAddToCart = (id) => {
-    setCart([
-      ...cart,
-      {
-        id,
-        qty: 1,
-      },
-    ]);
+    if (cart.find((item) => item.id === id)) {
+      setCart(
+        cart.map((item) =>
+          item.id === id ? { ...item, qty: item.qty + 1 } : item
+        )
+      );
+    } else {
+      setCart([
+        ...cart,
+        {
+          id,
+          qty: 1,
+        },
+      ]);
+    }
   };
   return (
     <>
@@ -63,7 +71,7 @@ const ProductsPage = () => {
         </Button>
       </div>
       <div className="flex justify-center py-5">
-        <div className="w-3/4 flex flex-wrap">
+        <div className="w-4/6 flex flex-wrap">
           {products.map((product) => (
             <CardProduct key={product.id}>
               <CardProduct.Header image={product.image}></CardProduct.Header>
@@ -78,37 +86,42 @@ const ProductsPage = () => {
             </CardProduct>
           ))}
         </div>
-        <div className="w-1/4">
-          <h1 className="text-3xl font-bold text-blue-600">Cart</h1>
-          <ul>
-            {cart.map((item) => (
-              <li key={item}>{item.id}</li>
-            ))}
-          </ul>
-          <table>
-            <tr>
-              <thead>
-                <tr>Product</tr>
-                <tr>Price</tr>
-                <tr>Quantity</tr>
-                <tr>Total</tr>
-              </thead>
-              <tbody>
-                {cart.map((item) => {
-                  const product = products.find(
-                    (product) => product.id === item.id
-                  );
-                  return (
-                    <tr key={item.id}>
-                      <td>{product.name}</td>
-                      <td>{product.price}</td>
-                      <td>{item.qty}</td>
-                      <td>{item.qty * product.price}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </tr>
+        <div className="w-2/6">
+          <h1 className="text-3xl font-bold text-blue-600 mb-2">Cart</h1>
+          <table className="text-left table-auto border-separate border-spacing-x-5">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cart.map((item) => {
+                const product = products.find(
+                  (product) => product.id === item.id
+                );
+                return (
+                  <tr key={item.id}>
+                    <td>{product.name}</td>
+                    <td>
+                      {product.price.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}
+                    </td>
+                    <td>{item.qty}</td>
+                    <td>
+                      {(item.qty * product.price).toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         </div>
       </div>
