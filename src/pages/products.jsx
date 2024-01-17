@@ -1,18 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import Button from "../components/elements/button";
 import CardProduct from "../components/fragments/card_product";
-import Counter from "../components/fragments/counter";
 import { getProducts } from "../services/product.service";
-
-const email = localStorage.getItem("email");
+import { getUsername } from "../services/auth.service";
 
 const ProductsPage = () => {
   const [cart, setCart] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [products, setProducts] = useState([]);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setUserName(getUsername(token));
+    } else {
+      window.location.href = "/login"
+    }
   }, []);
 
   useEffect(() => {
@@ -33,8 +41,7 @@ const ProductsPage = () => {
   }, [cart, products]);
 
   const handleLogout = () => {
-    localStorage.removeItem("email");
-    localStorage.removeItem("password");
+    localStorage.removeItem("token");
     window.location.href = "/login";
   };
 
@@ -77,7 +84,7 @@ const ProductsPage = () => {
   return (
     <>
       <div className="flex justify-end h-20 bg-blue-600 text-white items-center px-10">
-        {email}
+        {userName}
         <Button classname="ml-5 bg-black" onClick={handleLogout}>
           Logout
         </Button>
